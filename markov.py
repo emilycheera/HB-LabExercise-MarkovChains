@@ -1,6 +1,7 @@
 """Generate Markov text from text files."""
 
 from random import choice
+import sys
 
 
 def open_and_read_file(file_path):
@@ -11,6 +12,8 @@ def open_and_read_file(file_path):
     """
 
     # your code goes here
+
+    file_path = sys.argv[1]
 
     file_contents = open(file_path).read()
 
@@ -103,8 +106,6 @@ input_text = open_and_read_file(input_path)
 
 # Get a Markov chain
 chains = make_chains(input_text)
-
-print(chains)
 
 # Produce random text
 random_text = make_text(chains)
