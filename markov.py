@@ -80,6 +80,10 @@ def make_text(chains):
     # your code goes here
 
     starting_bigram = choice(list(chains.keys()))
+    
+    while starting_bigram[0][0].isupper() == False:
+        starting_bigram = choice(list(chains.keys()))
+
     words.extend(starting_bigram)
     starting_value = choice(chains[starting_bigram])
     words.append(starting_value)
