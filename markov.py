@@ -52,23 +52,19 @@ def make_chains(text_string):
     for i in range(len(words)-1):
         bigrams.append((words[i], words[i+1]))
 
-    # print(bigrams)
-
-    # bigrams is going to be the keys in the chains dictionary.
-    # the values in chains 
+    bigrams = list(set(bigrams))
 
     for bigram in bigrams:
+
         for i in range(len(words)-2):
+
             if "".join(bigram) == (words[i] + words[i+1]):
-                # chains[bigram] = chains.get(bigram, []).append(words[i+2])
+
                 if bigram not in chains:
                     chains[bigram] = [words[i+2]]
+
                 else:
                     chains[bigram].append(words[i+2])
-                
-    print(chains)
-
-
 
     return chains
 
@@ -80,6 +76,23 @@ def make_text(chains):
 
     # your code goes here
 
+    starting_bigram = choice(list(chains.keys()))
+    words.extend(starting_bigram)
+    starting_value = choice(chains[starting_bigram])
+    words.append(starting_value)
+
+    new_key = (starting_bigram[1], starting_value)
+
+    while True:
+        if new_key in chains:
+            random_value = choice(chains[new_key])
+            words.append(random_value)
+            new_key = (new_key[1], random_value)
+        else:
+            break
+
+    # print(words)
+
     return " ".join(words)
 
 
@@ -90,6 +103,8 @@ input_text = open_and_read_file(input_path)
 
 # Get a Markov chain
 chains = make_chains(input_text)
+
+print(chains)
 
 # Produce random text
 random_text = make_text(chains)
