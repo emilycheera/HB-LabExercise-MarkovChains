@@ -20,7 +20,7 @@ def open_and_read_file(file_path):
     return file_contents
 
 
-def make_chains(text_string):
+def make_chains(text_string, n):
     """Take input text as string; return dictionary of Markov chains.
 
     A chain will be a key that consists of a tuple of (word1, word2)
@@ -50,24 +50,31 @@ def make_chains(text_string):
     # your code goes here
     words = text_string.split()
 
-    bigrams = []
+    n_grams = []
 
-    for i in range(len(words)-1):
-        bigrams.append((words[i], words[i+1]))
+    for i in range(len(words)-(n-1)):
+        each_n_gram = []
+        for j in range(n):
+            each_n_gram.append(words[i + j])
+        n_grams.append(tuple(each_n_gram))
 
-    bigrams = list(set(bigrams))
+    n_grams = list(set(n_grams))
 
-    for bigram in bigrams:
+    for n_gram in n_grams:
 
-        for i in range(len(words)-2):
+        for i in range(len(words)-n):
 
-            if "".join(bigram) == (words[i] + words[i+1]):
+            test_string = ''
+            for j in range(n):
+                test_string += words[i + j]
 
-                if bigram not in chains:
-                    chains[bigram] = [words[i+2]]
+                if "".join(n_gram) == test_string:
 
-                else:
-                    chains[bigram].append(words[i+2])
+                    if n_gram not in chains:
+                        chains[n_gram] = [words[i+n]]
+
+                    else:
+                        chains[n_gram].append(words[i+n])
 
     return chains
 
@@ -79,22 +86,32 @@ def make_text(chains):
 
     # your code goes here
 
-    starting_bigram = choice(list(chains.keys()))
-    
-    while starting_bigram[0][0].isupper() == False:
-        starting_bigram = choice(list(chains.keys()))
+    starting_n_gram = choice(list(chains.keys()))
 
-    words.extend(starting_bigram)
-    starting_value = choice(chains[starting_bigram])
+    n = len(starting_n_gram)
+    
+    while starting_n_gram[0][0].isupper() == False:
+        starting_n_gram = choice(list(chains.keys()))
+
+    words.extend(starting_n_gram)
+    starting_value = choice(chains[starting_n_gram])
     words.append(starting_value)
 
-    new_key = (starting_bigram[1], starting_value)
+    new_key = []
+    for i in range(1, n):
+        new_key.append(starting_n_gram[i])
+    new_key.append(starting_value)
+    new_key = tuple(new_key)
 
     while True:
         if new_key in chains:
             random_value = choice(chains[new_key])
             words.append(random_value)
-            new_key = (new_key[1], random_value)
+            temp_new_key = []
+            for i in range(1, n):
+                temp_new_key.append(new_key[i])
+            temp_new_key.append(random_value)
+            new_key = tuple(temp_new_key)
         else:
             break
 
@@ -109,7 +126,7 @@ input_path = "green-eggs.txt"
 input_text = open_and_read_file(input_path)
 
 # Get a Markov chain
-chains = make_chains(input_text)
+chains = make_chains(input_text, 4)
 
 # Produce random text
 random_text = make_text(chains)
